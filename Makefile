@@ -4,9 +4,10 @@ CFLAGS = -g -std=c11
 
 all : client server
 
-client : client.c rede.o rede.h
-server : server.c rede.o rede.h
-rede.o : rede.h
+client : client.c ConexaoRawSocket.o
+server : server.c ConexaoRawSocket.o
+
+ConexaoRawSocket.o : ConexaoRawSocket.h
 
 .PHONY : clean
 clean :

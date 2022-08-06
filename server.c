@@ -4,27 +4,25 @@
 #include <arpa/inet.h>
 #include <net/ethernet.h>
 
+#include "ConexaoRawSocket.h"
+
 int main() {
   printf("server!\n");
 
-  int s = socket(AF_PACKET, SOCK_DGRAM, htons(ETH_P_ALL));
-  if (s < 0) {
-    perror("socket");
-    exit(1);
-  }
-
+  int s = ConexaoRawSocket("lo");
 
   char buf[2048];
 
   for (;;) {
+    printf("esperando...\n");
     int result = recv(s, buf, sizeof(buf), 0);
     if (result < 0) {
       perror("recv");
       exit(1);
     }
 
-    buf[sizeof(buf) -1] = '\0';
-    printf("recebi '%s'\n", buf);
+    buf[result] = '\0';
+    printf("recebi %d bytes '%s'\n", result, buf);
   }
 
   return 0;
