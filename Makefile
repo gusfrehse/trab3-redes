@@ -2,16 +2,12 @@
 
 CFLAGS = -g -std=c11
 
-all : client server
+main : rede.o
 
-client : client.c ConexaoRawSocket.o
-server : server.c ConexaoRawSocket.o
-
-ConexaoRawSocket.o : ConexaoRawSocket.h
+rede.o : rede.h
 
 .PHONY : clean
 clean :
-	rm -rf *.o
-	rm -rf client
-	rm -rf server
+	rm -f *.o
+	rm -f main
 
