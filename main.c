@@ -55,23 +55,52 @@ int main(int argc, char *argv[]) {
   strcpy(buf, "teste teste 123 123");
 
   if (bastao) {
-    for (;;) {
-      printf("ENTER pra mandar msg\n");
-      getchar();
-
-      int mandado = send(ss, buf, strlen(buf), 0);
-      if (mandado < 0) {
-        perror("send");
-      }
-      printf("mandei %d bytes!\n", mandado);
+//    for (;;) {
+//      printf("ENTER pra mandar msg\n");
+//      getchar();
+//
+//      int mandado = send(ss, buf, strlen(buf), 0);
+//      if (mandado < 0) {
+//        perror("send");
+//      }
+//      printf("mandei %d bytes!\n", mandado);
+//    }
+    printf("mandando msg\n");
+    int mandado = send(ss, buf, strlen(buf), 0);
+    if (mandado < 0) {
+      perror("send");
+      exit(1);
     }
-  } else {
-    for (;;) {
-      printf("esperando msg...\n");
 
-      int recebido = recv(sr, buf, sizeof(buf), 0);
-      buf[sizeof(buf) - 1] = '\0';
-      printf("recebido %d bytes: '%s'!\n", recebido, buf);
+    int recebidos = recv(sr, buf, sizeof(buf), 0);
+    if (recebidos < 0) {
+      perror("recv");
+      exit(1);
+    }
+    buf[recebidos] = '\0';
+    printf("recebi '%s'\n", buf);
+  } else {
+//    for (;;) {
+//      printf("esperando msg...\n");
+//
+//      int recebido = recv(sr, buf, sizeof(buf), 0);
+//      buf[sizeof(buf) - 1] = '\0';
+//      printf("recebido %d bytes: '%s'!\n", recebido, buf);
+//    }
+
+    int recebidos = recv(sr, buf, sizeof(buf), 0);
+    if (recebidos < 0) {
+      perror("recv");
+      exit(1);
+    }
+    buf[recebidos] = '\0';
+    printf("recebi '%s'\n", buf);
+
+    printf("repassando msg\n");
+    int mandado = send(ss, buf, strlen(buf), 0);
+    if (mandado < 0) {
+      perror("send");
+      exit(1);
     }
   }
 
