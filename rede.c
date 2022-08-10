@@ -18,7 +18,7 @@ int socket_receiver(in_port_t porta) {
 
   struct sockaddr_in endereco;
   endereco.sin_family = AF_INET;
-  endereco.sin_port = porta;
+  endereco.sin_port = htons(porta);
   endereco.sin_addr.s_addr = inet_addr("127.0.0.1");
 
   if (bind(soc, (struct sockaddr *)&endereco, sizeof(endereco)) == -1) {
@@ -38,7 +38,7 @@ int socket_sender(in_port_t porta, char *ip_str) {
 
   struct sockaddr_in endereco;
   endereco.sin_family = AF_INET;
-  endereco.sin_port = porta;
+  endereco.sin_port = htons(porta);
   endereco.sin_addr.s_addr = inet_addr(ip_str);
 
   int result = connect(soc, (struct sockaddr *)&endereco, sizeof(endereco));

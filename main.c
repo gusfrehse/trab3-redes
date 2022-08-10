@@ -9,7 +9,6 @@
 #define NUM_MAQ 4
 
 int main(int argc, char *argv[]) {
-  printf("server!\n");
 
   int maq = atoi(argv[argc - 1]);
   printf("MAQUINA: %d\n", maq);
@@ -28,11 +27,11 @@ int main(int argc, char *argv[]) {
   for(int i = 1;i <= NUM_MAQ;i++)
     printf("Porta saida: %d - Porta de entrada: %d\n", porta_saida[i - 1], porta_entrada[i - 1]);
 
-  //printf("porta saida: ");
-  //scanf("%d", &porta_saida);
+  int minha_porta_saida = porta_saida[maq - 1];
+  int minha_porta_entrada = porta_entrada[maq - 1];
 
-  //printf("porta entrada: ");
-  //scanf("%d", &porta_entrada);
+  printf("PORTA DE ENTRADA: %d\n", minha_porta_entrada);
+  printf("PORTA DE SAIDA: %d\n", minha_porta_saida);
 
   char char_bastao;
   printf("bastao? [y/N] ");
@@ -48,8 +47,8 @@ int main(int argc, char *argv[]) {
 
   printf("bastao é %d\n", bastao);
 
-  int ss = socket_sender(porta_saida[maq - 1], "127.0.0.1");
-  int sr = socket_receiver(porta_entrada[maq - 1]);
+  int ss = socket_sender(minha_porta_saida, "127.0.0.1");
+  int sr = socket_receiver(minha_porta_entrada);
 
   char buf[2048];
 
@@ -61,6 +60,9 @@ int main(int argc, char *argv[]) {
       getchar();
 
       int mandado = send(ss, buf, strlen(buf), 0);
+      if (mandado < 0) {
+        perror("send");
+      }
       printf("mandei %d bytes!\n", mandado);
     }
   } else {
