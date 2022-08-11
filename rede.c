@@ -49,3 +49,8 @@ int socket_sender(in_port_t porta, char *ip_str) {
 
   return soc;
 }
+
+void enviar_mensagem(int socket, char tipo_msg, char jogador, char aposta, char jogada){
+  mensagem msg;
+  msg.tipo_msg = tipo_msg;
+}
