@@ -33,6 +33,8 @@ int main(int argc, char *argv[]) {
   printf("PORTA DE ENTRADA: %d\n", minha_porta_entrada);
   printf("PORTA DE SAIDA: %d\n", minha_porta_saida);
 
+  inicializa_soquete(minha_porta_entrada, minha_porta_saida, "127.0.0.1");
+
   char char_bastao;
   printf("bastao? [y/N] ");
   char_bastao = getchar();
@@ -47,60 +49,25 @@ int main(int argc, char *argv[]) {
 
   printf("bastao é %d\n", bastao);
 
-  int ss = socket_sender(minha_porta_saida, "127.0.0.1");
-  int sr = socket_receiver(minha_porta_entrada);
-
-  char buf[2048];
-
-  strcpy(buf, "teste teste 123 123");
-
   if (bastao) {
-//    for (;;) {
-//      printf("ENTER pra mandar msg\n");
-//      getchar();
-//
-//      int mandado = send(ss, buf, strlen(buf), 0);
-//      if (mandado < 0) {
-//        perror("send");
-//      }
-//      printf("mandei %d bytes!\n", mandado);
-//    }
-    printf("mandando msg\n");
-    int mandado = send(ss, buf, strlen(buf), 0);
-    if (mandado < 0) {
-      perror("send");
-      exit(1);
-    }
+    // TODO: coletar qual o tipo da jogada atual
+    int jogada = 1;
 
-    int recebidos = recv(sr, buf, sizeof(buf), 0);
-    if (recebidos < 0) {
-      perror("recv");
-      exit(1);
-    }
-    buf[recebidos] = '\0';
-    printf("recebi '%s'\n", buf);
+    printf("enviando msg\n");
+    enviar_mensagem(TIPO_APOSTA, maq, 1, jogada);
+    mensagem msg = receber_mensagem();
+    printf("recebi a mensagem de volta\n");
   } else {
-//    for (;;) {
-//      printf("esperando msg...\n");
-//
-//      int recebido = recv(sr, buf, sizeof(buf), 0);
-//      buf[sizeof(buf) - 1] = '\0';
-//      printf("recebido %d bytes: '%s'!\n", recebido, buf);
-//    }
+    printf("esperando msg\n");
+    mensagem msg = receber_mensagem();
+    printf("recebi uma msg!\n");
+    if (msg.jogador == maq) {
+      // faz algo
+      printf("pra mim\n");
+    } else {
+      printf("nao eh pra mim\n");
 
-    int recebidos = recv(sr, buf, sizeof(buf), 0);
-    if (recebidos < 0) {
-      perror("recv");
-      exit(1);
-    }
-    buf[recebidos] = '\0';
-    printf("recebi '%s'\n", buf);
-
-    printf("repassando msg\n");
-    int mandado = send(ss, buf, strlen(buf), 0);
-    if (mandado < 0) {
-      perror("send");
-      exit(1);
+      enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
     }
   }
 

@@ -3,6 +3,12 @@
 
 #include <arpa/inet.h>
 
+#define TIPO_ATUALIZACAO 1
+#define TIPO_APOSTA 2
+#define TIPO_JOGAR 3
+#define TIPO_ATUALIZACAO_FICHAS 4
+#define TIPO_BASTAO 5
+
 typedef struct mensagem {
     unsigned char inicializacao;
     unsigned char tamanho;
@@ -14,8 +20,8 @@ typedef struct mensagem {
     unsigned char paridade;
 } mensagem; 
 
-int socket_receiver(in_port_t porta);
-int socket_sender(in_port_t porta, char *ip_str);
-void enviar_mensagem(int socket, char tipo_msg, char jogador, char aposta, char jogada);
+void inicializa_soquete(int porta_envio, int porta_recebe, char *ip_envio);
+void enviar_mensagem(char tipo_msg, char jogador, char aposta, char jogada);
+mensagem receber_mensagem();
 
 #endif

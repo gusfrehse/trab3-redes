@@ -9,7 +9,23 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-int socket_receiver(in_port_t porta) {
+#define BYTE_INIT (0b01010101)
+
+int sequencia_envio = 0;
+int sequencia_recebe = 0;
+
+int soquete_envio;
+int soquete_recebe;
+
+static int socket_receiver(in_port_t porta);
+static int socket_sender(in_port_t porta, char *ip_str);
+
+void inicializa_soquete(int porta_envio, int porta_recebe, char *ip_envio) {
+  soquete_recebe = socket_receiver(porta_recebe);
+  soquete_envio = socket_sender(porta_envio, ip_envio);
+}
+
+static int socket_receiver(in_port_t porta) {
   int soc = socket(AF_INET, SOCK_DGRAM, 0); /*cria socket*/
   if (soc < 0) {
     perror("socket");
@@ -50,7 +66,35 @@ int socket_sender(in_port_t porta, char *ip_str) {
   return soc;
 }
 
-void enviar_mensagem(int socket, char tipo_msg, char jogador, char aposta, char jogada){
+void enviar_mensagem(char tipo_msg, char jogador, char aposta, char jogada){
   mensagem msg;
+  msg.inicializacao = BYTE_INIT;
+  msg.tamanho = sizeof(mensagem);
+  msg.sequencia = sequencia_envio++;
   msg.tipo_msg = tipo_msg;
+  msg.jogador = jogador;
+  msg.valor_aposta = aposta;
+  msg.tipo_jogada = jogada;
+  msg.paridade = msg.inicializacao ^ msg.tamanho ^ msg.sequencia ^ msg.tipo_msg ^ msg.jogador ^ msg.valor_aposta ^ msg.tipo_msg;
+
+  int enviados = send(soquete_envio, &msg, sizeof(msg), 0);
+  if (enviados < 0) {
+    perror("send");
+    exit(1);
+  }
 }
+
+mensagem receber_mensagem() {
+  // TODO: checar paridade
+  mensagem msg;
+
+  int recebidos = recv(soquete_recebe, &msg, sizeof(msg), 0);
+  printf("recebi %d bytes\n", recebidos);
+  if (recebidos < 0) {
+    perror("recv");
+    exit(1);
+  }
+
+  return msg;
+}
+
