@@ -22,9 +22,9 @@ typedef struct jogador {
 } jogador;
 
 void jogar_dados(jogador* jogador);
-void printar_dados(short *dados);
+void printar_dados(jogador* jogador);
 void ordenar_dados(short *dados);
-void bloquear_dados(short *dados_bloq);
+void bloquear_dados(jogador* jogador);
 void mostrar_jogadas();
 int verifica_jogada(int jogada, short *dados);
 
