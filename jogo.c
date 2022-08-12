@@ -113,10 +113,71 @@ static int verifica_jogada_dois_par(short *dados) {
 }
 
 static int verifica_jogada_fullhouse(short *dados) {
-    int fh = 0;
-    if(verifica_jogada_dois_par(dados) && verifica_jogada_tripla(dados))
-        fh = 1;
-    return fh;
+  int nums[6] = {};
+  for (int i = 0; i < 6; i++) {
+    nums[dados[i] - 1]++;
+  }
+
+  int trinca = 0;
+  int par = 0;
+
+  for (int i = 0; i < 6; i++) {
+    if (nums[i] == 3) {
+      trinca = 1;
+    } else if (nums[i] == 2) {
+      par = 1;
+    }
+  }
+
+  return trinca && par;
+}
+
+static int verifica_jogada_seq_baixa(short *dados) {
+  for (int i = 0; i < NUM_DADOS; i++) {
+    if (dados[i] != i + 1)
+      return 0;
+  }
+
+  return 1;
+}
+
+static int verifica_jogada_seq_alta(short *dados) {
+  for (int i = 0; i < NUM_DADOS; i++) {
+    if (dados[i] != i + 2)
+      return 0;
+  }
+
+  return 1;
+}
+
+static int verifica_jogada_quadra(short *dados) {
+  int nums[6] = {};
+  for (int i = 0; i < 6; i++) {
+    nums[dados[i] - 1]++;
+  }
+
+  for (int i = 0; i < 6; i++) {
+    if (nums[i] == 4) {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+static int verifica_jogada_quinteto(short *dados) {
+  int nums[6] = {};
+  for (int i = 0; i < 6; i++) {
+    nums[dados[i] - 1]++;
+  }
+
+  for (int i = 0; i < 6; i++) {
+    if (nums[i] == 5) {
+      return 1;
+    }
+  }
+
+  return 0;
 }
 
 int verifica_jogada(int jogada, short *dados) {
@@ -126,10 +187,11 @@ int verifica_jogada(int jogada, short *dados) {
   case JOG_TRIO: conseguiu = verifica_jogada_tripla(dados); break;
   case JOG_DOIS_PAR: conseguiu = verifica_jogada_dois_par(dados); break;
   case JOG_FULL_HOUSE: conseguiu = verifica_jogada_fullhouse(dados); break;
-  case JOG_SEQ_BAIXA: break;
-  case JOG_SEQ_ALTA: break;
-  case JOG_QUADRA: break;
-  case JOG_QUINTETO: break;
+  case JOG_SEQ_BAIXA: conseguiu = verifica_jogada_seq_baixa(dados); break;
+  case JOG_SEQ_ALTA: conseguiu = verifica_jogada_seq_alta(dados); break;
+  case JOG_QUADRA: conseguiu = verifica_jogada_quadra(dados); break;
+  case JOG_QUINTETO: conseguiu = verifica_jogada_quinteto(dados); break;
   }
+
   return conseguiu;
 }
