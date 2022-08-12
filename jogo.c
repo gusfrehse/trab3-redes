@@ -7,6 +7,15 @@ static int jogar_dado() {
     return ((rand() % 6) + 1);
 }
 
+static int verifica_jogada_tripla(short *dados) {
+    int trio = 0;
+    for(int i = 0;i < NUM_DADOS - 2;i++){
+        if((dados[i] == dados[i + 1]) && (dados[i + 1] == dados[i + 2]))
+            trio = 1;
+    }
+    return trio;
+}
+
 void jogar_dados(jogador* jogador) {
     srand(time(NULL)); 
     printf("Digite qualquer letra para jogar os dados!\n");
@@ -33,9 +42,9 @@ static void troca(short *v, short num1, short num2){
     v[num2] = aux;
 }
 
-static short min_vetor(short *v) {
-    short min = 0;
-    for(int i = 1;i < NUM_DADOS;i++)
+static short min_vetor(short *v, int num) {
+    short min = num;
+    for(int i = num;i < NUM_DADOS;i++)
         if(v[i] < v[min])
             min = i;
     return min;
@@ -44,7 +53,7 @@ static short min_vetor(short *v) {
 void ordenar_dados(short *dados) {
     int i, j, min;
     for(i = 0;i < NUM_DADOS;i++){
-        min = min_vetor(dados);
+        min = min_vetor(dados, i);
         troca(dados, min, i);
     }
 }
@@ -102,11 +111,10 @@ int verifica_jogada_dois_par(short *dados) {
 }
 
 int verifica_jogada(int jogada, short *dados) {
-  ordenar_dados(dados);
-  
+  int conseguiu = 0;  
   switch (jogada) {
   case JOG_PAR: break;
-  case JOG_TRIO: break;
+  case JOG_TRIO: conseguiu = verifica_jogada_tripla(dados); break;
   case JOG_DOIS_PAR: break;
   case JOG_FULL_HOUSE: break;
   case JOG_SEQ_BAIXA: break;
@@ -114,4 +122,5 @@ int verifica_jogada(int jogada, short *dados) {
   case JOG_QUADRA: break;
   case JOG_QUINTETO: break;
   }
+  return conseguiu;
 }

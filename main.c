@@ -68,6 +68,7 @@ int main(int argc, char *argv[]) {
     mensagem msg = receber_mensagem();
     printf("recebi uma msg!\n");
     printf("jogada eh %d, do jogador %d, com aposta de %d\n", msg.tipo_jogada, msg.jogador, msg.valor_aposta);
+    eu.jogada = msg.tipo_jogada;
     printf("deseja apostar?[s/n] ");
     char char_aposta;
     scanf(" %c", &char_aposta);
@@ -92,7 +93,14 @@ int main(int argc, char *argv[]) {
           bloquear_dados(&eu);
       }
       //printar_dados(&eu);
+      ordenar_dados(eu.dados);
+      //printf("Dados ordenados: \n");
+      //printar_dados(&eu);
       int conseguiu = verifica_jogada(eu.jogada, eu.dados);
+      if(conseguiu)
+        printf("Voce venceu!!!\n");
+      else
+        printf("Nao foi dessa vez...\n");
     }
     else {
       enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
