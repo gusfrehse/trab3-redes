@@ -39,7 +39,7 @@ void ordenar_dados(short *dados) {
     }
 }
 
-void bloquar_dados(short *dados_bloq) {
+void bloquear_dados(short *dados_bloq) {
     char bloq;
     for(int i = 0;i < NUM_DADOS;i++){
         if(dados_bloq[i] == 0){
