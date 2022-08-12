@@ -54,9 +54,13 @@ int main(int argc, char *argv[]) {
     mostrar_jogadas();
     scanf("%d", &eu.jogada);
     enviar_mensagem(TIPO_APOSTA, 1, 1, eu.jogada);
+
     mensagem msg = receber_mensagem();
     enviar_mensagem(TIPO_ATUALIZACAO, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
     printf("recebi a mensagem de volta\n");
+
+    msg = receber_mensagem();
+
   } else {
     printf("Não comecei com o bastão!\n");
 

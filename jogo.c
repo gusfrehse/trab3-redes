@@ -66,6 +66,12 @@ void mostrar_jogadas() {
     printf("Digite o numero da jogada que deseja fazer: ");
 }
 
+static int verifica_jogada_par(short *dados) {
+  for (int i = 0; i < NUM_DADOS; i++) {
+    
+  }
+}
+
 int verifica_jogada(int jogada, short *dados) {
   ordenar_dados(dados);
   
