@@ -53,7 +53,7 @@ void bloquear_dados(jogador *jogador) {
     char bloq;
     for(int i = 0;i < NUM_DADOS;i++){
         if(jogador->dado_bloqueado[i] == 0){
-            printf("Bloquar dado %d? -> [%d] - [s/n] \n", i + 1, jogador->dados[i]);
+            printf("Bloquar dado %d? -> [%d] - [s/n]: ", i + 1, jogador->dados[i]);
             scanf(" %c", &bloq);
             if(bloq == 's' || bloq == 'S')
                 jogador->dado_bloqueado[i] = 1;
