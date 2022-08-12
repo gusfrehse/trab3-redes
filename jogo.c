@@ -113,9 +113,9 @@ int verifica_jogada_dois_par(short *dados) {
 int verifica_jogada(int jogada, short *dados) {
   int conseguiu = 0;  
   switch (jogada) {
-  case JOG_PAR: break;
+  case JOG_PAR: conseguiu = verifica_jogada_par(dados); break;
   case JOG_TRIO: conseguiu = verifica_jogada_tripla(dados); break;
-  case JOG_DOIS_PAR: break;
+  case JOG_DOIS_PAR: conseguiu = verifica_jogada_dois_par(dados); break;
   case JOG_FULL_HOUSE: break;
   case JOG_SEQ_BAIXA: break;
   case JOG_SEQ_ALTA: break;
