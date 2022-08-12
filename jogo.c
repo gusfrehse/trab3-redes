@@ -75,9 +75,30 @@ void mostrar_jogadas() {
 }
 
 static int verifica_jogada_par(short *dados) {
-  for (int i = 0; i < NUM_DADOS; i++) {
-    
+  for (int i = 1; i < NUM_DADOS; i++) {
+    if (dados[i-1] == dados[i])
+      return 1;
   }
+
+  return 0;
+}
+
+int verifica_jogada_dois_par(short *dados) {
+  int primeiro_par = 0;
+  for (int i = 0; i < NUM_DADOS - 1; i++) {
+    if (dados[i-1] == dados[i])
+      primeiro_par = i;
+  }
+
+  if (!primeiro_par)
+    return 0;
+
+  for (int i = NUM_DADOS - 2; dados[primeiro_par] != dados[i]; i--) {
+    if (dados[i] == dados[i + 1]) 
+      return 1;
+  }
+
+  return 0;
 }
 
 int verifica_jogada(int jogada, short *dados) {
