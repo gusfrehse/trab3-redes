@@ -11,7 +11,7 @@
 #define FICHAS_INICIAIS 15
 
 int main(int argc, char *argv[]) {
-  jogador eu; 
+  jogador eu = {}; 
 
   eu.num_fichas = FICHAS_INICIAIS;
 
@@ -67,8 +67,8 @@ int main(int argc, char *argv[]) {
     printf("deseja apostar?[s/n] ");
     char char_aposta;
     scanf(" %c", &char_aposta);
-    printf("char_aposta = '%c'", char_aposta);
-    printf("jogador: %d\n", eu.num_jogador);
+    //printf("char_aposta = '%c'", char_aposta);
+    //printf("jogador: %d\n", eu.num_jogador);
     if (char_aposta == 's' || char_aposta == 'S') {
       printf("apostado!\n");
 
@@ -78,16 +78,21 @@ int main(int argc, char *argv[]) {
     }
 
     msg = receber_mensagem();
-
+    enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
     if (msg.jogador == eu.num_jogador) {
       for (int i = 0; i < 3; i++) {
+        printf("Jogada [%d/3]\n", i + 1);
         jogar_dados(&eu);
-        printar_dados(eu.dados);
-        bloquear_dados(eu.dado_bloqueado);
+        printar_dados(&eu);
+        if(i < 2)
+          bloquear_dados(&eu);
       }
+      //printar_dados(&eu);
+      int conseguiu = verifica_jogada(eu.jogada, eu.dados);
     }
-
-    int conseguiu = verifica_jogada(eu.jogada, eu.dados);
+    else {
+      enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
+    }
   }
 
   return 0;

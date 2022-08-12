@@ -1,21 +1,29 @@
 #include "jogo.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 static int jogar_dado() {
     return ((rand() % 6) + 1);
 }
 
 void jogar_dados(jogador* jogador) {
+    srand(time(NULL)); 
     printf("Digite qualquer letra para jogar os dados!\n");
-    getchar();
+    if(getchar() == '\n')
+        getchar();
     for(int i = 0;i < NUM_DADOS;i++)
         if(jogador->dado_bloqueado[i] == 0)
             jogador->dados[i] = jogar_dado();
 }
-void printar_dados(short *dados) {
-    for(int i = 0;i < NUM_DADOS;i++)
-        printf("%d ", dados[i]);
+void printar_dados(jogador *jogador) {
+    for(int i = 0;i < NUM_DADOS;i++){
+        if(jogador->dado_bloqueado[i] == 1)
+            printf("[%d]* ", jogador->dados[i]);
+        else
+            printf("[%d] ", jogador->dados[i]);
+    }
+    printf("\n");   
 }
 
 static void troca(short *v, short num1, short num2){
@@ -41,14 +49,14 @@ void ordenar_dados(short *dados) {
     }
 }
 
-void bloquear_dados(short *dados_bloq) {
+void bloquear_dados(jogador *jogador) {
     char bloq;
     for(int i = 0;i < NUM_DADOS;i++){
-        if(dados_bloq[i] == 0){
-            printf("Bloquar dado %d?[s/n] \n", i + 1);
-            scanf("%c", &bloq);
+        if(jogador->dado_bloqueado[i] == 0){
+            printf("Bloquar dado %d? -> [%d] - [s/n] \n", i + 1, jogador->dados[i]);
+            scanf(" %c", &bloq);
             if(bloq == 's' || bloq == 'S')
-                dados_bloq[i] = 1;
+                jogador->dado_bloqueado[i] = 1;
         }
     }       
 }
