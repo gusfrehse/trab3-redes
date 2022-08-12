@@ -26,6 +26,6 @@ void printar_dados(short *dados);
 void ordenar_dados(short *dados);
 void bloquear_dados(short *dados_bloq);
 void mostrar_jogadas();
-
+int verifica_jogada(int jogada, short *dados);
 
 #endif

@@ -27,9 +27,6 @@ int main(int argc, char *argv[]) {
   for(int i = 1;i < NUM_MAQ;i++)
     porta_entrada[i] = porta_saida[i - 1];
 
-  for(int i = 1;i <= NUM_MAQ;i++)
-    printf("Porta saida: %d - Porta de entrada: %d\n", porta_saida[i - 1], porta_entrada[i - 1]);
-
   eu.porta_saida = porta_saida[eu.num_jogador - 1];
   eu.porta_entrada = porta_entrada[eu.num_jogador - 1];
 
@@ -83,10 +80,14 @@ int main(int argc, char *argv[]) {
     msg = receber_mensagem();
 
     if (msg.jogador == eu.num_jogador) {
-      // TODO:
-      jogar_dados(&eu);
-
+      for (int i = 0; i < 3; i++) {
+        jogar_dados(&eu);
+        printar_dados(eu.dados);
+        bloquear_dados(eu.dado_bloqueado);
+      }
     }
+
+    int conseguiu = verifica_jogada(eu.jogada, eu.dados);
   }
 
   return 0;

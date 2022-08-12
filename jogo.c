@@ -65,3 +65,18 @@ void mostrar_jogadas() {
     printf("8 - Quinteto --> Ganho em fichas: 15\n");
     printf("Digite o numero da jogada que deseja fazer: ");
 }
+
+int verifica_jogada(int jogada, short *dados) {
+  ordenar_dados(dados);
+  
+  switch (jogada) {
+  case JOG_PAR: break;
+  case JOG_TRIO: break;
+  case JOG_DOIS_PAR: break;
+  case JOG_FULL_HOUSE: break;
+  case JOG_SEQ_BAIXA: break;
+  case JOG_SEQ_ALTA: break;
+  case JOG_QUADRA: break;
+  case JOG_QUINTETO: break;
+  }
+}
