@@ -61,5 +61,5 @@ void mostrar_jogadas() {
     printf("6 - Sequencia Alta (2..6) --> Ganho em fichas: 7\n");
     printf("7 - Quadra --> Ganho em fichas: 10\n");
     printf("8 - Quinteto --> Ganho em fichas: 15\n");
-    printf("Digite o numero da jogada que deseja fazer e o numero de fichas que ira apostar: ");
+    printf("Digite o numero da jogada que deseja fazer: ");
 }
