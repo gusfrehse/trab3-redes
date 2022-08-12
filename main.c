@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
   printf("PORTA DE ENTRADA: %d\n", minha_porta_entrada);
   printf("PORTA DE SAIDA: %d\n", minha_porta_saida);
 
-  inicializa_soquete(minha_porta_entrada, minha_porta_saida, "127.0.0.1");
+  inicializa_soquete(minha_porta_saida, minha_porta_entrada, "127.0.0.1");
 
   char char_bastao;
   printf("bastao? [y/N] ");
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
     int jogada = 1;
 
     printf("enviando msg\n");
-    enviar_mensagem(TIPO_APOSTA, maq, 1, jogada);
+    enviar_mensagem(TIPO_APOSTA, 3, 1, jogada);
     mensagem msg = receber_mensagem();
     printf("recebi a mensagem de volta\n");
   } else {
