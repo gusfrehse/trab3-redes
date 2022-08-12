@@ -94,8 +94,8 @@ int main(int argc, char *argv[]) {
       }
       //printar_dados(&eu);
       ordenar_dados(eu.dados);
-      //printf("Dados ordenados: \n");
-      //printar_dados(&eu);
+      printf("Dados ordenados: \n");
+      printar_dados(&eu);
       int conseguiu = verifica_jogada(eu.jogada, eu.dados);
       if(conseguiu)
         printf("Voce venceu!!!\n");

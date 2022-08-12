@@ -92,7 +92,7 @@ static int verifica_jogada_par(short *dados) {
   return 0;
 }
 
-int verifica_jogada_dois_par(short *dados) {
+static int verifica_jogada_dois_par(short *dados) {
   int primeiro_par = 0;
   for (int i = 0; i < NUM_DADOS - 1; i++) {
     if (dados[i-1] == dados[i])
@@ -110,13 +110,20 @@ int verifica_jogada_dois_par(short *dados) {
   return 0;
 }
 
+static int verifica_jogada_fullhouse(short *dados) {
+    int fh = 0;
+    if(verifica_jogada_dois_par(dados) && verifica_jogada_tripla(dados))
+        fh = 1;
+    return fh;
+}
+
 int verifica_jogada(int jogada, short *dados) {
   int conseguiu = 0;  
   switch (jogada) {
   case JOG_PAR: conseguiu = verifica_jogada_par(dados); break;
   case JOG_TRIO: conseguiu = verifica_jogada_tripla(dados); break;
   case JOG_DOIS_PAR: conseguiu = verifica_jogada_dois_par(dados); break;
-  case JOG_FULL_HOUSE: break;
+  case JOG_FULL_HOUSE: conseguiu = verifica_jogada_fullhouse(dados); break;
   case JOG_SEQ_BAIXA: break;
   case JOG_SEQ_ALTA: break;
   case JOG_QUADRA: break;
