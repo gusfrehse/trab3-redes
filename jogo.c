@@ -15,9 +15,30 @@ void printar_dados(short *dados) {
     for(int i = 0;i < NUM_DADOS;i++)
         printf("%d ", dados[i]);
 }
-void ordenar_dados(short *dados) {
 
+static void troca(short *v, short num1, short num2){
+    short aux;
+    aux = v[num1];
+    v[num1] = v[num2];
+    v[num2] = aux;
 }
+
+static short min_vetor(short *v) {
+    short min = 0;
+    for(int i = 1;i < NUM_DADOS;i++)
+        if(v[i] < v[min])
+            min = i;
+    return min;
+}
+
+void ordenar_dados(short *dados) {
+    int i, j, min;
+    for(i = 0;i < NUM_DADOS;i++){
+        min = min_vetor(dados);
+        troca(dados, min, i);
+    }
+}
+
 void bloquar_dados(short *dados_bloq) {
     char bloq;
     for(int i = 0;i < NUM_DADOS;i++){
