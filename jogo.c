@@ -93,16 +93,18 @@ static int verifica_jogada_par(short *dados) {
 }
 
 static int verifica_jogada_dois_par(short *dados) {
-  int primeiro_par = 0;
-  for (int i = 0; i < NUM_DADOS - 1; i++) {
-    if (dados[i-1] == dados[i])
+  int primeiro_par = -1;
+  for (int i = 1; i < NUM_DADOS; i++) {
+    if (dados[i - 1] == dados[i]) {
       primeiro_par = i;
+      break;
+    }
   }
 
-  if (!primeiro_par)
+  if (primeiro_par == -1)
     return 0;
 
-  for (int i = NUM_DADOS - 2; dados[primeiro_par] != dados[i]; i--) {
+  for (int i = primeiro_par + 1; i < NUM_DADOS - 1; i++) {
     if (dados[i] == dados[i + 1]) 
       return 1;
   }

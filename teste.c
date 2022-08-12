@@ -4,10 +4,10 @@
 int main() {
   jogador j;
   j.dados[0] = 1;
-  j.dados[1] = 1;
+  j.dados[1] = 2;
   j.dados[2] = 2;
-  j.dados[3] = 2;
-  j.dados[4] = 3;
+  j.dados[3] = 5;
+  j.dados[4] = 5;
 
   printar_dados(&j);
   if (verifica_jogada(JOG_DOIS_PAR, j.dados)) {
