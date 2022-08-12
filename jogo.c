@@ -7,6 +7,8 @@ static int jogar_dado() {
 }
 
 void jogar_dados(jogador* jogador) {
+    printf("Digite qualquer letra para jogar os dados!\n");
+    getchar();
     for(int i = 0;i < NUM_DADOS;i++)
         if(jogador->dado_bloqueado[i] == 0)
             jogador->dados[i] = jogar_dado();
