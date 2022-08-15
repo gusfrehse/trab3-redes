@@ -180,6 +180,29 @@ static int verifica_jogada_quinteto(short *dados) {
   return 0;
 }
 
+void executar_jogada(jogador* jogador){
+  for (int i = 0; i < 3; i++) {
+    printf("Jogada [%d/3]\n", i + 1);
+    jogar_dados(jogador);
+    printar_dados(jogador);
+    if(i < 2)
+      bloquear_dados(jogador);
+  }
+}
+
+char* num2jogada(int num){
+  switch (num) {
+  case JOG_PAR: return "Dupla"; break;
+  case JOG_TRIO: return "Tripla"; break;
+  case JOG_DOIS_PAR: return "Dois pares"; break;
+  case JOG_FULL_HOUSE: return "Full House"; break;
+  case JOG_SEQ_BAIXA: return "Sequencia baixa (1..5)"; break;
+  case JOG_SEQ_ALTA: return "Sequencia alta (2..6)"; break;
+  case JOG_QUADRA: return "Quadra"; break;
+  case JOG_QUINTETO: ; return "Quinteto"; break;
+  }
+}
+
 int verifica_jogada(int jogada, short *dados) {
   int conseguiu = 0;  
   switch (jogada) {

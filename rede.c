@@ -89,7 +89,7 @@ mensagem receber_mensagem() {
   mensagem msg;
 
   int recebidos = recv(soquete_recebe, &msg, sizeof(msg), 0);
-  printf("recebi %d bytes\n", recebidos);
+  //printf("recebi %d bytes\n", recebidos);
   if (recebidos < 0) {
     perror("recv");
     exit(1);

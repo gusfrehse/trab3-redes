@@ -61,13 +61,7 @@ int main(int argc, char *argv[]) {
 
     msg = receber_mensagem();
     if (msg.jogador == eu.num_jogador) {
-      for (int i = 0; i < 3; i++) {
-        printf("Jogada [%d/3]\n", i + 1);
-        jogar_dados(&eu);
-        printar_dados(&eu);
-        if(i < 2)
-          bloquear_dados(&eu);
-      }
+      executar_jogada(&eu);
       //printar_dados(&eu);
       ordenar_dados(eu.dados);
       printf("Dados ordenados: \n");
@@ -87,8 +81,9 @@ int main(int argc, char *argv[]) {
 
     printf("esperando msg\n");
     mensagem msg = receber_mensagem();
-    printf("recebi uma msg!\n");
-    printf("jogada eh %d, do jogador %d, com aposta de %d\n", msg.tipo_jogada, msg.jogador, msg.valor_aposta);
+    //printf("recebi uma msg!\n");
+    //printf("jogada eh %d, do jogador %d, com aposta de %d\n", msg.tipo_jogada, msg.jogador, msg.valor_aposta);
+    printf("(Jogador %d) A jogada da vez eh: %s - Aposta atual: %d\n", msg.jogador, num2jogada(msg.tipo_jogada), msg.valor_aposta);
     eu.jogada = msg.tipo_jogada;
     printf("deseja apostar?[s/n] ");
     char char_aposta;
@@ -105,13 +100,7 @@ int main(int argc, char *argv[]) {
     msg = receber_mensagem();
     enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
     if (msg.jogador == eu.num_jogador) {
-      for (int i = 0; i < 3; i++) {
-        printf("Jogada [%d/3]\n", i + 1);
-        jogar_dados(&eu);
-        printar_dados(&eu);
-        if(i < 2)
-          bloquear_dados(&eu);
-      }
+      executar_jogada(&eu);
       //printar_dados(&eu);
       ordenar_dados(eu.dados);
       printf("Dados ordenados: \n");

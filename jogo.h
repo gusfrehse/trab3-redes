@@ -27,5 +27,7 @@ void ordenar_dados(short *dados);
 void bloquear_dados(jogador* jogador);
 void mostrar_jogadas();
 int verifica_jogada(int jogada, short *dados);
+void executar_jogada(jogador* jogador);
+char* num2jogada(int num);
 
 #endif
