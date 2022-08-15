@@ -29,5 +29,6 @@ void mostrar_jogadas();
 int verifica_jogada(int jogada, short *dados);
 void executar_jogada(jogador* jogador);
 char* num2jogada(int num);
+int ganho_jogada (int jogada);
 
 #endif

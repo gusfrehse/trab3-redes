@@ -15,7 +15,7 @@ typedef struct mensagem {
     unsigned char sequencia;
     unsigned char tipo_msg;
     unsigned char jogador;
-    unsigned char valor_aposta;
+    char valor_aposta;
     unsigned char tipo_jogada; 
     unsigned char paridade;
 } mensagem; 

@@ -204,6 +204,8 @@ char* num2jogada(int num){
 }
 
 int verifica_jogada(int jogada, short *dados) {
+  ordenar_dados(dados);
+
   int conseguiu = 0;  
   switch (jogada) {
   case JOG_PAR: conseguiu = verifica_jogada_par(dados); break;
@@ -217,4 +219,18 @@ int verifica_jogada(int jogada, short *dados) {
   }
 
   return conseguiu;
+}
+
+int ganho_jogada (int jogada) {
+  switch (jogada) {
+  case JOG_PAR: return 2;
+  case JOG_TRIO: return 3;
+  case JOG_DOIS_PAR: return 4;
+  case JOG_FULL_HOUSE: return 5;
+  case JOG_SEQ_BAIXA: return 7;
+  case JOG_SEQ_ALTA: return 7;
+  case JOG_QUADRA: return 10;
+  case JOG_QUINTETO: return 15;
+  default: return 0;
+  }
 }
