@@ -60,6 +60,27 @@ int main(int argc, char *argv[]) {
     printf("recebi a mensagem de volta\n");
 
     msg = receber_mensagem();
+    if (msg.jogador == eu.num_jogador) {
+      for (int i = 0; i < 3; i++) {
+        printf("Jogada [%d/3]\n", i + 1);
+        jogar_dados(&eu);
+        printar_dados(&eu);
+        if(i < 2)
+          bloquear_dados(&eu);
+      }
+      //printar_dados(&eu);
+      ordenar_dados(eu.dados);
+      printf("Dados ordenados: \n");
+      printar_dados(&eu);
+      int conseguiu = verifica_jogada(eu.jogada, eu.dados);
+      if(conseguiu)
+        printf("Voce venceu!!!\n");
+      else
+        printf("Nao foi dessa vez...\n");
+    }
+    else {
+      enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
+    }
 
   } else {
     printf("Não comecei com o bastão!\n");
@@ -76,7 +97,6 @@ int main(int argc, char *argv[]) {
     //printf("jogador: %d\n", eu.num_jogador);
     if (char_aposta == 's' || char_aposta == 'S') {
       printf("apostado!\n");
-
       enviar_mensagem(msg.tipo_msg, eu.num_jogador, msg.valor_aposta + 1, msg.tipo_jogada);
     } else {
       enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
