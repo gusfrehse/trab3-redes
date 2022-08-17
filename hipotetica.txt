@@ -1,0 +1,53 @@
+
+A -> B
+^    |
+|    v
+D <- C
+
+- A começa com o bastão.
+- C vai fazer a aposta mais alta.
+
+A:            B:            C:            D:
+  APOSTA >    ~ APOSTA      ~ APOSTA      ~ APOSTA 
+~ APOSTA      .             .             .
+.             > APOSTA      .             .
+.               APOSTA >    .             .
+.             ~ ATUALI      > APOSTA      .
+.             .               APOSTA >    .
+.             .             ~ ATUALI      > APOSTA
+.             .             .               APOSTA >
+> APOSTA      .             .             ~ ATUALI
+  ATUALI >    .             .             .
+~ ATUALI      > ATUALI      .             .
+.               ATUALI >    .             .
+.             ~ JOGAR/AFICH > ATUALI      .
+.             .               ATUALI >    .
+.             .             ~ JOGAR/AFICH > ATUALI
+.             .             .               ATUALI >
+> ATUALI      .             .             ~ JOGAR/AFICH
+  JOGAR  >    .             .             .
+~ AFICH       > JOGAR       .             .
+.               JOGAR  >    .             .
+.             ~ AFICH       > JOGAR       .
+.             .               AFICH  >    .
+.             .             ~ AFICH       > AFICH
+.             .             .               AFICH >
+> AFICH       .             .             ~ BASTA
+  AFICH  >    .             .             .
+~ BASTA       > AFICH       .             .
+.               AFICH  >    .             .
+.             ~ BASTA/APOST > AFICH       .
+.             .               BASTA  >    .
+.             .             ~ APOSTA      > BASTA
+.             .             .               BASTA >
+> BASTA       .             .             ~ APOSTA
+  BASTA  >    .             .             .
+~ APOSTA      > BASTA       .             .
+              ... (B faz papel de A agora)
+
+Linhas 23/25/27 -> B, C, D nao sabem se estao na frente ou atras de quem deve
+jogar (quem fez aposta mais alta), Se estiverem na frente, devem repassa JOGAR,
+se nao, esperam a ATUALIZACAO_FICHAS de quem jogou.
+
+Linha 37 -> A sabe que deve ser BASTAO pq ele tinha o bastao no comeco do jogo.
+
