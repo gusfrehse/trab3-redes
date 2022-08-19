@@ -32,15 +32,15 @@ A:            B:            C:            D:
 .             .               AFICH  >    .
 .             .             ~ AFICH       > AFICH
 .             .             .               AFICH >
-> AFICH       .             .             ~ BASTA
+> AFICH       .             .             ~ VOLTA/BASTAO/APOSTA
   AFICH  >    .             .             .
-~ BASTA       > AFICH       .             .
+~ VOLTA       > AFICH       .             .
 .               AFICH  >    .             .
-.             ~ BASTA/APOST > AFICH       .
-.             .               BASTA  >    .
-.             .             ~ APOSTA      > BASTA
-.             .             .               BASTA >
-> BASTA       .             .             ~ APOSTA
+.             ~ VLT/BST/APS > AFICH       .
+.             .               VOLTA  >    .
+.             .             ~ APSTA/BST   > VOLTA
+.             .             .               VOLTA >
+> VOLTA       .             .             ~ APOSTA
   BASTA  >    .             .             .
 ~ APOSTA      > BASTA       .             .
               ... (B faz papel de A agora)

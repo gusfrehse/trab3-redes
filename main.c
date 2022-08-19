@@ -69,6 +69,9 @@ void fluxo_bastao() {
   // repassa TIPO_ATUALIZACAO_FICHAS
   enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
 
+  msg = receber_mensagem();
+  assert(msg.tipo_msg == TIPO_VOLTA_JOG); // espera volta de quem ta jogando
+
   // passa o bastao para o proximo jogador (TODO: nao sei o que passar aqui nos outros campos)
   printf("mandei bastao\n");
   enviar_mensagem(TIPO_BASTAO, 0, 0, 0);
@@ -89,7 +92,20 @@ int perguntar_aposta(int apostador, int tipo_jogada, int aposta_atual, int nova_
 void fluxo_nao_bastao() {
   // recebe a mensagem de aposta
   mensagem msg = receber_mensagem();
-  assert(msg.tipo_msg == TIPO_APOSTA);
+  assert(msg.tipo_msg == TIPO_APOSTA || msg.tipo_msg == TIPO_BASTAO || msg.tipo_msg == TIPO_VOLTA_JOG);
+
+  if (msg.tipo_msg == TIPO_BASTAO) {
+    // caso seja bastao reinicia o loop como bastao
+    printf("Recebi o bastão!\n");
+    bastao = 1;
+    return;
+  } else if (msg.tipo_msg == TIPO_VOLTA_JOG) {
+    // repassa a mensagem para voltar para o bastao antigo
+    enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
+
+    msg = receber_mensagem();
+    assert(msg.tipo_msg == TIPO_APOSTA);
+  }
 
   // usuario escolhe se quer apostar
   eu.jogada = msg.tipo_jogada;
@@ -149,7 +165,7 @@ void fluxo_nao_bastao() {
       printf("recebi TIPO_ATUALIZACAO_FICHAS\n");
 
       // manda bastao, o original deve estar esperando.
-      enviar_mensagem(TIPO_BASTAO, 0, 0, 0);
+      enviar_mensagem(TIPO_VOLTA_JOG, 0, 0, 0);
 
       // no proximo precisa esperar o bastao ou aposta
 
@@ -184,7 +200,7 @@ int main(int argc, char *argv[]) {
   printf("MAQUINA: %d\n", eu.num_jogador);
 
   // Seleciona as portas
-  int porta_saida[NUM_MAQ], porta_entrada[NUM_MAQ], bastao;
+  int porta_saida[NUM_MAQ], porta_entrada[NUM_MAQ];
 
   for(int i = 1;i <= NUM_MAQ;i++)
     porta_saida[i - 1] = atoi(argv[i]);
@@ -215,96 +231,13 @@ int main(int argc, char *argv[]) {
     bastao = 0;
   }
 
-  if (bastao) {
-    fluxo_bastao();
-    return 0;
-
-    printf("Comecei com o bastão!\n");
-    printf("enviando msg\n");
-    mostrar_jogadas();
-    scanf("%d", &eu.jogada);
-
-    enviar_mensagem(TIPO_APOSTA, eu.num_jogador, APOSTA_INICIAL, eu.jogada);
-    mensagem msg = receber_mensagem(); // recebe de volta a mensagem TIPO_APOSTA
-                                       //
-    printf("recebi a mensagem de volta\n");
-
-    enviar_mensagem(TIPO_ATUALIZACAO, msg.jogador, msg.valor_aposta, msg.tipo_jogada); // comunica a rede do maior apostador
-
-    msg = receber_mensagem(); // recebe de volta a mensagem TIPO_ATUALIZACAO
-    if (msg.jogador != eu.num_jogador) {
-      bastao = 0;
-
-      // encaminha a mensagem para o proximo jogador
-      enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
-
-      // atualizacao do jogador de dados
-      msg = receber_mensagem(); // TIPO_ATUALIZACAO_FICHAS
-      printf("jogador %d ganhou/perdeu %d fichas\n", msg.jogador, msg.valor_aposta);
-      // TODO: atualizar os dados do jogador msg.jogador
+  while (1) {
+    if (bastao) {
+      printf("Estou com o bastão!\n");
+      fluxo_bastao();
     } else {
-      // é para mim a mensagem...
-      bastao = 1;
-
-      int ganho = 0;
-      if (jogar_jogada()) {
-        ganho = 10; // TODO: mudar para o valor correto
-      } else {
-        ganho = -APOSTA_INICIAL;
-      }
-
-      enviar_mensagem(TIPO_ATUALIZACAO_FICHAS, eu.num_jogador,  ganho, eu.jogada);
-    }
-  } else {
-    printf("Não comecei com o bastão!\n");
-    fluxo_nao_bastao();
-    return 0;
-
-    printf("esperando msg\n");
-    mensagem msg = receber_mensagem(); // TIPO_APOSTA
-    //printf("recebi uma msg!\n");
-    //printf("jogada eh %d, do jogador %d, com aposta de %d\n", msg.tipo_jogada, msg.jogador, msg.valor_aposta);
-    printf("(Jogador %d) A jogada da vez eh: %s - Aposta atual: %d\n", msg.jogador, num2jogada(msg.tipo_jogada), msg.valor_aposta);
-    eu.jogada = msg.tipo_jogada;
-    printf("deseja apostar?[s/n] ");
-    char char_aposta;
-    scanf(" %c", &char_aposta);
-    //printf("char_aposta = '%c'", char_aposta);
-    //printf("jogador: %d\n", eu.num_jogador);
-
-    int minha_aposta = 0;
-    if (char_aposta == 's' || char_aposta == 'S') {
-      printf("apostado!\n");
-      minha_aposta = msg.valor_aposta + 1;
-      enviar_mensagem(msg.tipo_msg, eu.num_jogador, minha_aposta, msg.tipo_jogada);
-    } else {
-      enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
-    }
-
-    msg = receber_mensagem(); // TIPO_ATUALIZACAO
-    enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
-    if (msg.jogador != eu.num_jogador) {
-      bastao = 0;
-
-      // encaminha a mensagem para o proximo jogador
-      enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
-
-      // atualizacao do jogador de dados
-      msg = receber_mensagem(); // TIPO_ATUALIZACAO_FICHAS
-      printf("jogador %d ganhou/perdeu %d fichas\n", msg.jogador, msg.valor_aposta);
-      // TODO: atualizar os dados do jogador msg.jogador
-    } else {
-      // é para mim a mensagem...
-      bastao = 1;
-
-      int ganho = 0;
-      if (jogar_jogada()) {
-        ganho = 10; // TODO: mudar para o valor correto
-      } else {
-        ganho = -minha_aposta;
-      }
-
-      enviar_mensagem(TIPO_ATUALIZACAO_FICHAS, eu.num_jogador,  ganho, eu.jogada);
+      printf("Não estou com o bastão!\n");
+      fluxo_nao_bastao();
     }
   }
 

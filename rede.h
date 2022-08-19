@@ -7,7 +7,8 @@
 #define TIPO_APOSTA 2
 #define TIPO_JOGAR 3
 #define TIPO_ATUALIZACAO_FICHAS 4
-#define TIPO_BASTAO 5
+#define TIPO_VOLTA_JOG 5
+#define TIPO_BASTAO 6
 
 typedef struct mensagem {
     unsigned char inicializacao;

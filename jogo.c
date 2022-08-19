@@ -114,7 +114,7 @@ static int verifica_jogada_dois_par(short *dados) {
 
 static int verifica_jogada_fullhouse(short *dados) {
   int nums[6] = {};
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < NUM_DADOS; i++) {
     nums[dados[i] - 1]++;
   }
 
@@ -122,6 +122,7 @@ static int verifica_jogada_fullhouse(short *dados) {
   int par = 0;
 
   for (int i = 0; i < 6; i++) {
+    printf("DEBUG verifica fullhouse: dados com %d = %d\n", i, nums[i]);
     if (nums[i] == 3) {
       trinca = 1;
     } else if (nums[i] == 2) {
@@ -152,7 +153,7 @@ static int verifica_jogada_seq_alta(short *dados) {
 
 static int verifica_jogada_quadra(short *dados) {
   int nums[6] = {};
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < NUM_DADOS; i++) {
     nums[dados[i] - 1]++;
   }
 
@@ -167,7 +168,7 @@ static int verifica_jogada_quadra(short *dados) {
 
 static int verifica_jogada_quinteto(short *dados) {
   int nums[6] = {};
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < NUM_DADOS; i++) {
     nums[dados[i] - 1]++;
   }
 
