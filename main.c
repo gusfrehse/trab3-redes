@@ -31,6 +31,18 @@ int jogar_jogada() {
       return 0;
 }
 
+void reseta_dados(jogador *jogador){
+  for(int i = 0;i < 6;i++)
+    jogador->dado_bloqueado[i] = 0;
+}
+
+void mostrar_se_ganhou(mensagem msg){
+  if(msg.valor_aposta > 0)
+    printf("Jogador %d ganhou %d fichas!!!\n", msg.jogador, msg.valor_aposta);
+  else
+    printf("Jogador %d perdeu %d fichas...\n", msg.jogador, (msg.valor_aposta * -1));
+}
+
 void fluxo_bastao() {
   mensagem msg;
   int apostador;
@@ -63,8 +75,7 @@ void fluxo_bastao() {
     char ganho = 0;
 
     // Limpar vetor de bloqueados
-    for(int i = 0;i < 6;i++)
-      eu.dado_bloqueado[i] = 0;  
+    reseta_dados(&eu);
 
     if (jogar_jogada()) {
       ganho = 10; // TODO: mudar para o valor correto
@@ -102,6 +113,7 @@ void fluxo_bastao() {
 
     msg = receber_mensagem();
     assert(msg.tipo_msg == TIPO_VOLTA_JOG); // espera volta de quem ta jogando 
+    mostrar_se_ganhou(msg);
   }
   // passa o bastao para o proximo jogador (TODO: nao sei o que passar aqui nos outros campos)
   printf("mandei bastao\n");
@@ -180,8 +192,7 @@ void fluxo_nao_bastao() {
 
       char ganho = 0;
 
-      for(int i = 0;i < 6;i++)
-        eu.dado_bloqueado[i] = 0;
+      reseta_dados(&eu);
 
       if (jogar_jogada()) {
         ganho = 10; // TODO: mudar para o valor correto
@@ -211,6 +222,7 @@ void fluxo_nao_bastao() {
     enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
 
     msg = receber_mensagem();
+    mostrar_se_ganhou(msg);
     assert(msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS);
   }
 
