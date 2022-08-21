@@ -9,6 +9,7 @@
 #define TIPO_ATUALIZACAO_FICHAS 4
 #define TIPO_VOLTA_JOG 5
 #define TIPO_BASTAO 6
+#define TIPO_ERRO 7
 
 typedef struct mensagem {
     unsigned char inicializacao;

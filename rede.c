@@ -75,13 +75,21 @@ void enviar_mensagem(char tipo_msg, char jogador, char aposta, char jogada){
   msg.jogador = jogador;
   msg.valor_aposta = aposta;
   msg.tipo_jogada = jogada;
-  msg.paridade = msg.inicializacao ^ msg.tamanho ^ msg.sequencia ^ msg.tipo_msg ^ msg.jogador ^ msg.valor_aposta ^ msg.tipo_msg;
+  msg.paridade = msg.inicializacao ^ msg.tamanho ^ msg.sequencia ^ msg.tipo_msg ^ msg.jogador ^ (unsigned char) msg.valor_aposta ^ msg.tipo_jogada;
 
   int enviados = send(soquete_envio, &msg, sizeof(msg), 0);
   if (enviados < 0) {
     perror("send");
     exit(1);
   }
+}
+
+static void enviar_erro() {
+  mensagem msg = {};
+  msg.inicializacao = BYTE_INIT;
+  msg.tipo_msg = TIPO_ERRO;
+
+  send(soquete_envio, &msg, sizeof(msg), 0);
 }
 
 mensagem receber_mensagem() {
@@ -93,6 +101,28 @@ mensagem receber_mensagem() {
   if (recebidos < 0) {
     perror("recv");
     exit(1);
+  }
+
+  if (msg.tipo_msg == TIPO_ERRO) {
+    printf("ERRO em máquina anterior. Abortando.\n");
+    enviar_erro();
+    exit(11);
+  }
+
+  unsigned char paridade = msg.inicializacao ^ msg.tamanho ^ msg.sequencia ^ msg.tipo_msg ^ msg.jogador ^ (unsigned char) msg.valor_aposta ^ msg.tipo_jogada;
+  if (paridade != msg.paridade) {
+    printf("ERRO de paridade. Abortando.\n");
+    printf("Esperava 0x%x obtive 0x%x\n", paridade, msg.paridade);
+    enviar_erro();
+    exit(22);
+  }
+
+  // sequencializacao
+  if (sequencia_recebe++ != msg.sequencia) {
+    printf("ERRO de sequencialização. Abortando.\n");
+    printf("Esperava %u obtive %u\n", sequencia_recebe, msg.sequencia);
+    enviar_erro();
+    exit(33);
   }
 
   return msg;
