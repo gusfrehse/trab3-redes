@@ -12,16 +12,17 @@
 #define FICHAS_INICIAIS 15
 #define APOSTA_INICIAL 1
 
-jogador eu = {}; 
+int eu = 0;
+jogador jogadores[NUM_MAQ] = {};
 int bastao = 0;
 
 int jogar_jogada() {
-      executar_jogada(&eu);
+      executar_jogada(&jogadores[eu - 1]);
       //printar_dados(&eu);
-      ordenar_dados(eu.dados);
+      ordenar_dados(jogadores[eu - 1].dados);
       printf("Dados ordenados: \n");
-      printar_dados(&eu);
-      int conseguiu = verifica_jogada(eu.jogada, eu.dados);
+      printar_dados(&jogadores[eu  - 1]);
+      int conseguiu = verifica_jogada(jogadores[eu - 1].jogada, jogadores[eu - 1].dados);
       if(conseguiu) {
         printf("Voce venceu!!!\n");
         return 1;
@@ -32,7 +33,7 @@ int jogar_jogada() {
 }
 
 void reseta_dados(jogador *jogador){
-  for(int i = 0;i < 6;i++)
+  for(int i = 0; i < NUM_DADOS; i++)
     jogador->dado_bloqueado[i] = 0;
 }
 
@@ -54,7 +55,7 @@ void fluxo_bastao() {
   scanf("%d", &jogada);
 
   // inicia as apostas
-  enviar_mensagem(TIPO_APOSTA, eu.num_jogador, APOSTA_INICIAL, jogada);
+  enviar_mensagem(TIPO_APOSTA, eu, APOSTA_INICIAL, jogada);
 
   // obtem o maior apostador
   msg = receber_mensagem();
@@ -68,25 +69,26 @@ void fluxo_bastao() {
 
   // recebe de volta a mensagem
   msg = receber_mensagem();
-  if(msg.jogador == eu.num_jogador){
+  if(msg.jogador == eu){
     int sou_maior_apostador = 1;
-    printf("sou o maior apostador!\n");
+    printf("Ninguém apostou, você joga!\n");
 
     char ganho = 0;
 
     // Limpar vetor de bloqueados
-    reseta_dados(&eu);
+    reseta_dados(&jogadores[eu - 1]);
 
     if (jogar_jogada()) {
-      ganho = valor_premio_jogada(eu.jogada); // TODO: mudar para o valor correto
+      ganho = valor_premio_jogada(jogadores[eu - 1].jogada);
     } else {
-      ganho = -1;
+      ganho = -APOSTA_INICIAL;
     }
-    eu.num_fichas += ganho;
-    printf("Voce agora possui %d fichas\n", eu.num_fichas);
+
+    jogadores[eu - 1].num_fichas += ganho;
+    printf("Você agora possui %d fichas\n", jogadores[eu - 1].num_fichas);
 
     // manda atualizacao e espera dar a volta
-    enviar_mensagem(TIPO_ATUALIZACAO_FICHAS, eu.num_jogador, ganho, msg.tipo_jogada);
+    enviar_mensagem(TIPO_ATUALIZACAO_FICHAS, eu, ganho, msg.tipo_jogada);
 
     //printf("esperando TIPO_ATUALIZACAO_FICHAS\n");
     msg = receber_mensagem();
@@ -99,8 +101,7 @@ void fluxo_bastao() {
     // no proximo precisa esperar o bastao ou aposta
 
     //return;
-  }
-  else{
+  } else {
     assert(msg.tipo_msg == TIPO_ATUALIZACAO);
     // passa o pseudo bastao para o apostador
     enviar_mensagem(TIPO_JOGAR, apostador, valor_aposta, jogada);
@@ -109,22 +110,25 @@ void fluxo_bastao() {
     // recebe atualizacao das fichas do apostador
     msg = receber_mensagem();
     assert(msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS);
+
+    jogadores[msg.jogador - 1].num_fichas = msg.valor_aposta;
     mostrar_se_ganhou(msg);
+    printf("Jogador %d agora está com %d fichas!\n", msg.jogador, jogadores[msg.jogador - 1].num_fichas);
+
     // repassa TIPO_ATUALIZACAO_FICHAS
     enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
 
     msg = receber_mensagem();
     assert(msg.tipo_msg == TIPO_VOLTA_JOG); // espera volta de quem ta jogando 
   }
-  // passa o bastao para o proximo jogador (TODO: nao sei o que passar aqui nos outros campos)
-  //printf("mandei bastao\n");
+
   enviar_mensagem(TIPO_BASTAO, 0, 0, 0);
   bastao = 0;
 }
 
 int perguntar_aposta(int apostador, int tipo_jogada, int aposta_atual, int nova_aposta) {
-  printf("(Jogador %d) A jogada da vez eh: %s - Aposta atual: %d\n", apostador, num2jogada(tipo_jogada), aposta_atual);
-  printf("Voce possui %d fichas, deseja apostar %d fichas? [s/n] ", eu.num_fichas, aposta_atual + 1);
+  printf("(Jogador %d) A jogada da vez é: %s - Aposta atual: %d\n", apostador, num2jogada(tipo_jogada), aposta_atual);
+  printf("Você possui %d fichas, deseja apostar %d fichas? [s/n] ", jogadores[eu - 1].num_fichas, aposta_atual + 1);
   
   char char_aposta;
   scanf(" %c", &char_aposta);
@@ -151,13 +155,13 @@ void fluxo_nao_bastao() {
   }
 
   // usuario escolhe se quer apostar
-  eu.jogada = msg.tipo_jogada;
+  jogadores[eu - 1].jogada = msg.tipo_jogada;
 
   int minha_aposta = msg.valor_aposta + 1;
   if (perguntar_aposta(msg.jogador, msg.tipo_jogada, msg.valor_aposta, minha_aposta)) {
-    printf("apostado %d fichas!\n", minha_aposta);
+    printf("Você apostou %d fichas!\n", minha_aposta);
     // encaminha minha aposta
-    enviar_mensagem(msg.tipo_msg, eu.num_jogador, minha_aposta, msg.tipo_jogada);
+    enviar_mensagem(msg.tipo_msg, eu, minha_aposta, msg.tipo_jogada);
   } else {
     minha_aposta = 0;
     // encaminha aposta
@@ -166,7 +170,7 @@ void fluxo_nao_bastao() {
 
   msg = receber_mensagem();
   assert(msg.tipo_msg == TIPO_ATUALIZACAO);
-  printf("maior aposta foi do jogador %d com %d fichas na jogada %s\n", msg.jogador, msg.valor_aposta, num2jogada(msg.tipo_jogada));
+  printf("A maior aposta foi do Jogador %d com %d fichas na jogada %s\n", msg.jogador, msg.valor_aposta, num2jogada(msg.tipo_jogada));
 
   // reenvia a atualizacao
   enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
@@ -179,11 +183,11 @@ void fluxo_nao_bastao() {
     mostrar_se_ganhou(msg);
   assert(msg.tipo_msg == TIPO_JOGAR || msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS);
   //printf("recebi JOGAR ou ATUALIZACAO FICHAS: ");
-  //printf("tipo %d jogador %d eu_num %d\n", msg.tipo_jogada, msg.jogador, eu.num_jogador);
+  //printf("tipo %d jogador %d eu_num %d\n", msg.tipo_jogada, msg.jogador, eu);
 
   int sou_maior_apostador = 0;
 
-  if (msg.tipo_msg == TIPO_JOGAR && msg.jogador == eu.num_jogador) {
+  if (msg.tipo_msg == TIPO_JOGAR && msg.jogador == eu) {
       // sou o maior apostador, preciso:
       //  - jogar dados
       //  - mandar atualizacao de fichas
@@ -191,22 +195,22 @@ void fluxo_nao_bastao() {
       //  - mandar bastao para o original
 
       sou_maior_apostador = 1;
-      printf("sou o maior apostador!\n");
+      printf("Você foi quem mais apostou! Você joga!\n");
 
       char ganho = 0;
 
-      reseta_dados(&eu);
+      reseta_dados(&jogadores[eu - 1]);
 
       if (jogar_jogada()) {
-        ganho = valor_premio_jogada(eu.jogada); // TODO: mudar para o valor correto
+        ganho = valor_premio_jogada(jogadores[eu - 1].jogada);
       } else {
         ganho = -minha_aposta;
       }
-      eu.num_fichas += ganho;
-      printf("Voce agora possui %d fichas\n", eu.num_fichas);
+      jogadores[eu - 1].num_fichas += ganho;
+      printf("Você agora possui %d fichas\n", jogadores[eu - 1].num_fichas);
 
       // manda atualizacao e espera dar a volta
-      enviar_mensagem(TIPO_ATUALIZACAO_FICHAS, eu.num_jogador, ganho, msg.tipo_jogada);
+      enviar_mensagem(TIPO_ATUALIZACAO_FICHAS, eu, ganho, msg.tipo_jogada);
 
       //printf("esperando TIPO_ATUALIZACAO_FICHAS\n");
       msg = receber_mensagem();
@@ -222,9 +226,9 @@ void fluxo_nao_bastao() {
       return;
   }
 
-  if (msg.tipo_msg == TIPO_JOGAR && msg.jogador != eu.num_jogador) {
+  if (msg.tipo_msg == TIPO_JOGAR && msg.jogador != eu) {
     // nao sou, preciso repassar o TIPO_JOGAR e esperar a TIPO_ATUALIZACAO_FICHA
-    printf("recebi jogar mas nao sou o maior apostador\n");
+    printf("Jogador %d apostou mais que você!\n", msg.jogador);
     enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
 
     msg = receber_mensagem();
@@ -233,7 +237,7 @@ void fluxo_nao_bastao() {
   }
 
   // aqui msg é TIPO_ATUALIZACAO FICHAS
-  //jogadores[msg.jogador - 1].fichas -= msg.valor_aposta;
+  // jogadores[msg.jogador - 1].fichas -= msg.valor_aposta;
   // TODO: atulizar as fichas do jogador da msg, checar se < 0 e sair se for o caso
 
   // repassa TIPO_ATUALIZACAO_FICHAS
@@ -245,49 +249,57 @@ void fluxo_nao_bastao() {
 
 int main(int argc, char *argv[]) {
 
-  //eu.num_fichas = FICHAS_INICIAIS;
+  if (argc < 6) {
+    printf("Modo de uso: %s <porta1> <porta2> <porta3> <porta4> <numero jogador>\n", argv[0]);
+    return 1;
+  }
 
-  eu.num_jogador = atoi(argv[argc - 1]);
-  printf("MAQUINA: %d\n", eu.num_jogador);
+  eu = atoi(argv[argc - 1]);
+  printf("Você é o o Jogador %d!\n", eu);
 
   // Seleciona as portas
-  int porta_saida[NUM_MAQ], porta_entrada[NUM_MAQ];
 
-  for(int i = 1;i <= NUM_MAQ;i++)
-    porta_saida[i - 1] = atoi(argv[i]);
+  for(int i = 0; i < NUM_MAQ; i++)
+    jogadores[i].porta_saida = atoi(argv[i + 1]);
     
-  porta_entrada[0] = porta_saida[NUM_MAQ - 1];
-  for(int i = 1;i < NUM_MAQ;i++)
-    porta_entrada[i] = porta_saida[i - 1];
+  jogadores[0].porta_entrada = jogadores[NUM_MAQ - 1].porta_saida;
+  for(int i = 0; i < NUM_MAQ - 1;i++)
+    jogadores[i + 1].porta_entrada = jogadores[i].porta_saida;
 
-  eu.porta_saida = porta_saida[eu.num_jogador - 1];
-  eu.porta_entrada = porta_entrada[eu.num_jogador - 1];
-  eu.num_fichas = NUM_FICHAS_INICIAL;
+  for (int i = 0; i < NUM_MAQ; i++) {
+    jogadores[i].num_fichas = NUM_FICHAS_INICIAL;
+  }
 
-  //printf("PORTA DE ENTRADA: %ld\n", eu.porta_entrada);
-  //printf("PORTA DE SAIDA: %ld\n", eu.porta_saida);
+  //printf("PORTA DE ENTRADA: %ld\n", jogadores[eu - 1].porta_entrada);
+  //printf("PORTA DE SAIDA: %ld\n", jogadores[eu - 1].porta_saida);
 
   // Cria o soquete
-  inicializa_soquete(eu.porta_saida, eu.porta_entrada, "127.0.0.1");
+  inicializa_soquete(jogadores[eu - 1].porta_saida, jogadores[eu - 1].porta_entrada, "127.0.0.1");
 
   // checa bastao
   char char_bastao;
-  printf("bastao? [y/N] ");
+  printf("Você começa? [s/n] ");
   char_bastao = getchar();
   if (char_bastao == '\n')
     char_bastao = getchar();
 
-  if (char_bastao == 'y') {
+  if (char_bastao == 's' || char_bastao == 'S') {
     bastao = 1;
   } else {
     bastao = 0;
   }
 
   while (1) {
-    if (eu.num_fichas < 0){
-      printf("Fim de jogo!\n");
-      break;
+    for (int i = 0; i < NUM_MAQ; i++) {
+      if (jogadores[i].num_fichas < 0) {
+        if (i == eu - 1)
+          printf("Fim de jogo! Você perdeu...\n");
+        else 
+          printf("Jogador %d perdeu todas as fichas! Fim de jogo!\n", i + 1);
+        return 0;
+      }
     }
+
     if (bastao) {
       //printf("Estou com o bastão!\n");
       fluxo_bastao();
