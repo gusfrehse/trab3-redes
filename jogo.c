@@ -204,6 +204,19 @@ char* num2jogada(int num){
   }
 }
 
+int valor_premio_jogada(int num) {
+  switch (num) {
+  case JOG_PAR: return 2; break;
+  case JOG_TRIO: return 3; break;
+  case JOG_DOIS_PAR: return 4; break;
+  case JOG_FULL_HOUSE: return 5; break;
+  case JOG_SEQ_BAIXA: return  7; break;
+  case JOG_SEQ_ALTA: return 7; break;
+  case JOG_QUADRA: return 10; break;
+  case JOG_QUINTETO: ; return 15; break;
+  }
+}
+
 int verifica_jogada(int jogada, short *dados) {
   ordenar_dados(dados);
 

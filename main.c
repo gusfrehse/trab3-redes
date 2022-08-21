@@ -78,7 +78,7 @@ void fluxo_bastao() {
     reseta_dados(&eu);
 
     if (jogar_jogada()) {
-      ganho = 10; // TODO: mudar para o valor correto
+      ganho = valor_premio_jogada(eu.jogada); // TODO: mudar para o valor correto
     } else {
       ganho = -1;
     }
@@ -196,7 +196,7 @@ void fluxo_nao_bastao() {
       reseta_dados(&eu);
 
       if (jogar_jogada()) {
-        ganho = 10; // TODO: mudar para o valor correto
+        ganho = valor_premio_jogada(eu.jogada); // TODO: mudar para o valor correto
       } else {
         ganho = -minha_aposta;
       }
