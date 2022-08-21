@@ -93,7 +93,6 @@ static void enviar_erro() {
 }
 
 mensagem receber_mensagem() {
-  // TODO: checar paridade
   mensagem msg;
 
   int recebidos = recv(soquete_recebe, &msg, sizeof(msg), 0);
