@@ -10,6 +10,7 @@
 #define JOG_SEQ_ALTA 6
 #define JOG_QUADRA 7
 #define JOG_QUINTETO 8
+#define NUM_FICHAS_INICIAL 20
 
 typedef struct jogador {
     int num_fichas;
