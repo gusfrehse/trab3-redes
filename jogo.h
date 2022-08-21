@@ -31,5 +31,6 @@ void executar_jogada(jogador* jogador);
 char* num2jogada(int num);
 int ganho_jogada (int jogada);
 int valor_premio_jogada(int num);
+int verifica_entrada_jogada(int num);
 
 #endif

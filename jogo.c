@@ -18,7 +18,7 @@ static int verifica_jogada_tripla(short *dados) {
 
 void jogar_dados(jogador* jogador) {
     srand(time(NULL)); 
-    printf("Digite qualquer letra para jogar os dados!\n");
+    printf("Digite qualquer letra para jogar os dados: ");
     if(getchar() == '\n')
         getchar();
     for(int i = 0;i < NUM_DADOS;i++)
@@ -71,7 +71,8 @@ void bloquear_dados(jogador *jogador) {
 }
 
 void mostrar_jogadas() {
-    printf("---------- JOGADAS ----------\n");
+    printf("\nAgora você escolhe a jogada!\n");
+    printf("\n---------- JOGADAS ----------\n");
     printf("1 - Dupla --> Ganho em fichas: 2\n");
     printf("2 - Trio --> Ganho em fichas: 3\n");
     printf("3 - Dois pares --> Ganho em fichas: 4\n");
@@ -79,7 +80,7 @@ void mostrar_jogadas() {
     printf("5 - Sequencia Baixa (1..5) --> Ganho em fichas: 7\n");
     printf("6 - Sequencia Alta (2..6) --> Ganho em fichas: 7\n");
     printf("7 - Quadra --> Ganho em fichas: 10\n");
-    printf("8 - Quinteto --> Ganho em fichas: 15\n");
+    printf("8 - Quinteto --> Ganho em fichas: 15\n\n");
     printf("Digite o numero da jogada que deseja fazer: ");
 }
 
@@ -122,7 +123,7 @@ static int verifica_jogada_fullhouse(short *dados) {
   int par = 0;
 
   for (int i = 0; i < 6; i++) {
-    printf("DEBUG verifica fullhouse: dados com %d = %d\n", i, nums[i]);
+    //printf("DEBUG verifica fullhouse: dados com %d = %d\n", i, nums[i]);
     if (nums[i] == 3) {
       trinca = 1;
     } else if (nums[i] == 2) {
@@ -158,7 +159,7 @@ static int verifica_jogada_quadra(short *dados) {
   }
 
   for (int i = 0; i < 6; i++) {
-    if (nums[i] == 4) {
+    if (nums[i] >= 4) {
       return 1;
     }
   }
@@ -247,4 +248,12 @@ int ganho_jogada (int jogada) {
   case JOG_QUINTETO: return 15;
   default: return 0;
   }
+}
+
+int verifica_entrada_jogada(int num) {
+  int ok = 0;
+  for(int i = 1;i <= 8;i++)
+    if(num == i)
+      ok = 1;
+  return ok;
 }
