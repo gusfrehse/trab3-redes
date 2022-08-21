@@ -38,9 +38,9 @@ void reseta_dados(jogador *jogador){
 
 void mostrar_se_ganhou(mensagem msg){
   if(msg.valor_aposta > 0)
-    printf("Jogador %d ganhou %d fichas!!!\n", msg.jogador, msg.valor_aposta);
+    printf("(Jogador %d) ganhou %d fichas!!!\n", msg.jogador, msg.valor_aposta);
   else
-    printf("Jogador %d perdeu %d fichas...\n", msg.jogador, (msg.valor_aposta * -1));
+    printf("(Jogador %d) perdeu %d fichas...\n", msg.jogador, (msg.valor_aposta * -1));
 }
 
 void fluxo_bastao() {
@@ -107,13 +107,12 @@ void fluxo_bastao() {
     // recebe atualizacao das fichas do apostador
     msg = receber_mensagem();
     assert(msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS);
-
+    mostrar_se_ganhou(msg);
     // repassa TIPO_ATUALIZACAO_FICHAS
     enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
 
     msg = receber_mensagem();
     assert(msg.tipo_msg == TIPO_VOLTA_JOG); // espera volta de quem ta jogando 
-    mostrar_se_ganhou(msg);
   }
   // passa o bastao para o proximo jogador (TODO: nao sei o que passar aqui nos outros campos)
   printf("mandei bastao\n");
@@ -174,6 +173,8 @@ void fluxo_nao_bastao() {
   // se é ou está antes do jogador com maior aposta, vai ser TIPO_JOGAR
   // se está depois, vai ser TIPO_ATUALIZACAO_FICHAS
   msg = receber_mensagem(); 
+  if(msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS)
+    mostrar_se_ganhou(msg);
   assert(msg.tipo_msg == TIPO_JOGAR || msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS);
   printf("recebi JOGAR ou ATUALIZACAO FICHAS: ");
   printf("tipo %d jogador %d eu_num %d\n", msg.tipo_jogada, msg.jogador, eu.num_jogador);
@@ -206,6 +207,7 @@ void fluxo_nao_bastao() {
       printf("esperando TIPO_ATUALIZACAO_FICHAS\n");
       msg = receber_mensagem();
       assert(msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS);
+      mostrar_se_ganhou(msg);
       printf("recebi TIPO_ATUALIZACAO_FICHAS\n");
 
       // manda bastao, o original deve estar esperando.
@@ -222,8 +224,8 @@ void fluxo_nao_bastao() {
     enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
 
     msg = receber_mensagem();
-    mostrar_se_ganhou(msg);
     assert(msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS);
+    mostrar_se_ganhou(msg);
   }
 
   // aqui msg é TIPO_ATUALIZACAO FICHAS
