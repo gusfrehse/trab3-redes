@@ -56,26 +56,56 @@ void fluxo_bastao() {
 
   // recebe de volta a mensagem
   msg = receber_mensagem();
-  assert(msg.tipo_msg == TIPO_ATUALIZACAO);
+  if(msg.jogador == eu.num_jogador){
+    int sou_maior_apostador = 1;
+    printf("sou o maior apostador!\n");
 
-  // passa o pseudo bastao para o apostador
-  enviar_mensagem(TIPO_JOGAR, apostador, valor_aposta, jogada);
-  printf("mandei TIPO_JOGAR apostador %d valor_aposta %d jogada %s\n", apostador, valor_aposta, num2jogada(jogada));
+    char ganho = 0;
 
-  // recebe atualizacao das fichas do apostador
-  msg = receber_mensagem();
-  assert(msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS);
+    // Limpar vetor de bloqueados
+    for(int i = 0;i < 6;i++)
+      eu.dado_bloqueado[i] = 0;  
 
-  // repassa TIPO_ATUALIZACAO_FICHAS
-  enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
+    if (jogar_jogada()) {
+      ganho = 10; // TODO: mudar para o valor correto
+    } else {
+      ganho = -1;
+    }
 
-  msg = receber_mensagem();
-  assert(msg.tipo_msg == TIPO_VOLTA_JOG); // espera volta de quem ta jogando
+    // manda atualizacao e espera dar a volta
+    enviar_mensagem(TIPO_ATUALIZACAO_FICHAS, eu.num_jogador, ganho, msg.tipo_jogada);
 
+    printf("esperando TIPO_ATUALIZACAO_FICHAS\n");
+    msg = receber_mensagem();
+    assert(msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS);
+    printf("recebi TIPO_ATUALIZACAO_FICHAS\n");
+
+    // manda bastao, o original deve estar esperando.
+    //enviar_mensagem(TIPO_VOLTA_JOG, 0, 0, 0);
+
+    // no proximo precisa esperar o bastao ou aposta
+
+    //return;
+  }
+  else{
+    assert(msg.tipo_msg == TIPO_ATUALIZACAO);
+    // passa o pseudo bastao para o apostador
+    enviar_mensagem(TIPO_JOGAR, apostador, valor_aposta, jogada);
+    printf("mandei TIPO_JOGAR apostador %d valor_aposta %d jogada %s\n", apostador, valor_aposta, num2jogada(jogada));
+
+    // recebe atualizacao das fichas do apostador
+    msg = receber_mensagem();
+    assert(msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS);
+
+    // repassa TIPO_ATUALIZACAO_FICHAS
+    enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
+
+    msg = receber_mensagem();
+    assert(msg.tipo_msg == TIPO_VOLTA_JOG); // espera volta de quem ta jogando 
+  }
   // passa o bastao para o proximo jogador (TODO: nao sei o que passar aqui nos outros campos)
   printf("mandei bastao\n");
   enviar_mensagem(TIPO_BASTAO, 0, 0, 0);
-
   bastao = 0;
 }
 
@@ -149,6 +179,9 @@ void fluxo_nao_bastao() {
       printf("sou o maior apostador!\n");
 
       char ganho = 0;
+
+      for(int i = 0;i < 6;i++)
+        eu.dado_bloqueado[i] = 0;
 
       if (jogar_jogada()) {
         ganho = 10; // TODO: mudar para o valor correto
