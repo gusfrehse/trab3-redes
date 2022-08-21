@@ -17,7 +17,6 @@ typedef struct jogador {
     int jogada;
     long porta_entrada;
     long porta_saida;
-    short num_jogador;
     short dados[NUM_DADOS];
     short dado_bloqueado[NUM_DADOS];
 } jogador;

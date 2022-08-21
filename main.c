@@ -69,6 +69,8 @@ void fluxo_bastao() {
 
   // recebe de volta a mensagem
   msg = receber_mensagem();
+  assert(msg.tipo_msg == TIPO_ATUALIZACAO);
+
   if(msg.jogador == eu){
     int sou_maior_apostador = 1;
     printf("Ninguém apostou, você joga!\n");
@@ -102,7 +104,6 @@ void fluxo_bastao() {
 
     //return;
   } else {
-    assert(msg.tipo_msg == TIPO_ATUALIZACAO);
     // passa o pseudo bastao para o apostador
     enviar_mensagem(TIPO_JOGAR, apostador, valor_aposta, jogada);
     //printf("mandei TIPO_JOGAR apostador %d valor_aposta %d jogada %s\n", apostador, valor_aposta, num2jogada(jogada));
@@ -111,12 +112,17 @@ void fluxo_bastao() {
     msg = receber_mensagem();
     assert(msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS);
 
-    jogadores[msg.jogador - 1].num_fichas = msg.valor_aposta;
+    jogadores[msg.jogador - 1].num_fichas += msg.valor_aposta;
     mostrar_se_ganhou(msg);
     printf("Jogador %d agora está com %d fichas!\n", msg.jogador, jogadores[msg.jogador - 1].num_fichas);
 
     // repassa TIPO_ATUALIZACAO_FICHAS
     enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
+
+    if (jogadores[msg.jogador - 1].num_fichas <= 0) { // meio sus mas é o que dá
+        printf("Jogador %d perdeu todas as fichas! Fim de jogo!\n", msg.jogador);
+        exit(0);
+    }
 
     msg = receber_mensagem();
     assert(msg.tipo_msg == TIPO_VOLTA_JOG); // espera volta de quem ta jogando 
@@ -179,11 +185,7 @@ void fluxo_nao_bastao() {
   // se é ou está antes do jogador com maior aposta, vai ser TIPO_JOGAR
   // se está depois, vai ser TIPO_ATUALIZACAO_FICHAS
   msg = receber_mensagem(); 
-  if(msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS)
-    mostrar_se_ganhou(msg);
   assert(msg.tipo_msg == TIPO_JOGAR || msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS);
-  //printf("recebi JOGAR ou ATUALIZACAO FICHAS: ");
-  //printf("tipo %d jogador %d eu_num %d\n", msg.tipo_jogada, msg.jogador, eu);
 
   int sou_maior_apostador = 0;
 
@@ -206,8 +208,10 @@ void fluxo_nao_bastao() {
       } else {
         ganho = -minha_aposta;
       }
+
       jogadores[eu - 1].num_fichas += ganho;
-      printf("Você agora possui %d fichas\n", jogadores[eu - 1].num_fichas);
+
+      printf("Você perdeu %d fichas e agora possui %d fichas!\n", -ganho, jogadores[eu - 1].num_fichas);
 
       // manda atualizacao e espera dar a volta
       enviar_mensagem(TIPO_ATUALIZACAO_FICHAS, eu, ganho, msg.tipo_jogada);
@@ -215,7 +219,6 @@ void fluxo_nao_bastao() {
       //printf("esperando TIPO_ATUALIZACAO_FICHAS\n");
       msg = receber_mensagem();
       assert(msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS);
-      mostrar_se_ganhou(msg);
       //printf("recebi TIPO_ATUALIZACAO_FICHAS\n");
 
       // manda bastao, o original deve estar esperando.
@@ -233,12 +236,14 @@ void fluxo_nao_bastao() {
 
     msg = receber_mensagem();
     assert(msg.tipo_msg == TIPO_ATUALIZACAO_FICHAS);
-    mostrar_se_ganhou(msg);
   }
 
   // aqui msg é TIPO_ATUALIZACAO FICHAS
+  jogadores[msg.jogador - 1].num_fichas += msg.valor_aposta;
+  mostrar_se_ganhou(msg);
+  printf("Jogador %d agora está com %d fichas!\n", msg.jogador, jogadores[msg.jogador - 1].num_fichas);
+
   // jogadores[msg.jogador - 1].fichas -= msg.valor_aposta;
-  // TODO: atulizar as fichas do jogador da msg, checar se < 0 e sair se for o caso
 
   // repassa TIPO_ATUALIZACAO_FICHAS
   enviar_mensagem(msg.tipo_msg, msg.jogador, msg.valor_aposta, msg.tipo_jogada);
@@ -291,7 +296,7 @@ int main(int argc, char *argv[]) {
 
   while (1) {
     for (int i = 0; i < NUM_MAQ; i++) {
-      if (jogadores[i].num_fichas < 0) {
+      if (jogadores[i].num_fichas <= 0) {
         if (i == eu - 1)
           printf("Fim de jogo! Você perdeu...\n");
         else 
