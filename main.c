@@ -12,6 +12,8 @@
 #define FICHAS_INICIAIS 15
 #define APOSTA_INICIAL 1
 
+//#define APOSTA_N_FICHAS
+
 int eu = 0;
 jogador jogadores[NUM_MAQ] = {};
 int bastao = 0;
@@ -140,12 +142,27 @@ void fluxo_bastao() {
 
 int perguntar_aposta(int apostador, int tipo_jogada, int aposta_atual, int nova_aposta) {
   printf("(Jogador %d) A jogada da vez é: %s - Aposta atual: %d\n", apostador, num2jogada(tipo_jogada), aposta_atual);
+
+#ifndef APOSTA_N_FICHAS
   printf("Você possui %d fichas, deseja apostar %d fichas? [s/n] ", jogadores[eu - 1].num_fichas, aposta_atual + 1);
   
   char char_aposta;
   scanf(" %c", &char_aposta);
 
   return char_aposta == 's' || char_aposta == 'S';
+
+#else
+
+  int aposta;
+  
+  do {
+    printf("Você possui %d fichas, deseja apostar quantas fichas? Mínimo: %d fichas ('0' se não quiser apostar)\n", jogadores[eu - 1].num_fichas, 1 + aposta_atual);
+
+    scanf(" %d", &aposta);
+  } while ((aposta != 0 && aposta <= aposta_atual) || aposta > jogadores[eu - 1].num_fichas || aposta < 0);
+
+  return aposta;
+#endif
 }
 
 void fluxo_nao_bastao() {
@@ -170,7 +187,12 @@ void fluxo_nao_bastao() {
   jogadores[eu - 1].jogada = msg.tipo_jogada;
 
   int minha_aposta = msg.valor_aposta + 1;
+#ifndef APOSTA_N_FICHAS
   if (perguntar_aposta(msg.jogador, msg.tipo_jogada, msg.valor_aposta, minha_aposta)) {
+#else
+  if ((minha_aposta = perguntar_aposta(msg.jogador, msg.tipo_jogada, msg.valor_aposta, minha_aposta))) {
+#endif
+
     printf("Você apostou %d fichas!\n", minha_aposta);
     // encaminha minha aposta
     enviar_mensagem(msg.tipo_msg, eu, minha_aposta, msg.tipo_jogada);

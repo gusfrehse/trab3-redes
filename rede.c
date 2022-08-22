@@ -93,6 +93,7 @@ static void enviar_erro() {
 }
 
 mensagem receber_mensagem() {
+  printf("Esperando outros jogadores...\n");
   mensagem msg;
 
   int recebidos = recv(soquete_recebe, &msg, sizeof(msg), 0);
